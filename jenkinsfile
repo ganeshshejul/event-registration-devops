@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/ganeshshejul/event-registration-devops.git'
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                sh 'docker build -t event-app .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh 'docker stop event-container || true'
+                sh 'docker rm event-container || true'
+                sh 'docker run -d -p 5000:5000 --name event-container event-app'
+            }
+        }
+    }
+}
