@@ -15,6 +15,78 @@
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #333;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .toggle-switch {
+            background-color: #444;
+        }
+
+        .toggle-switch:hover {
+            background-color: #555;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .toggle-label {
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .toggle-slider {
+            width: 30px;
+            height: 16px;
+            background-color: #ccc;
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .toggle-slider::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: white;
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #4caf50;
+        }
+
+        .toggle-switch input:checked + .toggle-slider::after {
+            left: 15px;
         }
 
         .container {
@@ -23,12 +95,24 @@
             background: white;
             padding: 30px;
             border: 1px solid #ddd;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .container {
+            background-color: #2d2d2d;
+            border-color: #444;
+            color: #e0e0e0;
         }
 
         h1 {
             color: #333;
             margin-bottom: 20px;
             font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        body.dark-mode h1 {
+            color: #e0e0e0;
         }
 
         .form-group {
@@ -40,6 +124,11 @@
             color: #333;
             font-weight: bold;
             margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+
+        body.dark-mode label {
+            color: #e0e0e0;
         }
 
         input[type="text"],
@@ -51,6 +140,18 @@
             border: 1px solid #ccc;
             font-size: 14px;
             font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode input[type="text"],
+        body.dark-mode input[type="email"],
+        body.dark-mode input[type="tel"],
+        body.dark-mode select {
+            background-color: #3d3d3d;
+            color: #e0e0e0;
+            border-color: #555;
         }
 
         input[type="text"]:focus,
@@ -59,6 +160,14 @@
         select:focus {
             outline: 1px solid #333;
             border: 1px solid #333;
+        }
+
+        body.dark-mode input[type="text"]:focus,
+        body.dark-mode input[type="email"]:focus,
+        body.dark-mode input[type="tel"]:focus,
+        body.dark-mode select:focus {
+            outline: 1px solid #888;
+            border: 1px solid #888;
         }
 
         button {
@@ -70,20 +179,42 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         button:hover {
             background-color: #555;
         }
 
+        body.dark-mode button {
+            background-color: #555;
+        }
+
+        body.dark-mode button:hover {
+            background-color: #777;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
+            }
+
+            .toggle-container {
+                top: 10px;
+                right: 10px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="toggle-container">
+        <label class="toggle-switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label" id="modeLabel">Light</span>
+        </label>
+    </div>
+
     <div class="container">
         <h1>Event Registration Form</h1>
 
@@ -115,5 +246,42 @@
             <button type="submit">Register</button>
         </form>
     </div>
+
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const modeLabel = document.getElementById('modeLabel');
+        const htmlElement = document.documentElement;
+
+        // Check for saved dark mode preference or use system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedMode = localStorage.getItem('darkMode');
+
+        if (savedMode !== null) {
+            // Use saved preference
+            const isDark = savedMode === 'true';
+            darkModeToggle.checked = isDark;
+            setDarkMode(isDark);
+        } else {
+            // Use system preference
+            darkModeToggle.checked = prefersDark;
+            setDarkMode(prefersDark);
+        }
+
+        darkModeToggle.addEventListener('change', function() {
+            const isDark = this.checked;
+            setDarkMode(isDark);
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        function setDarkMode(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                modeLabel.textContent = 'Dark';
+            } else {
+                document.body.classList.remove('dark-mode');
+                modeLabel.textContent = 'Light';
+            }
+        }
+    </script>
 </body>
 </html>
